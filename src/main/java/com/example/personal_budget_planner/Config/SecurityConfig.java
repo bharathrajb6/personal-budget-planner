@@ -32,7 +32,7 @@ public class SecurityConfig {
                 authorizeHttpRequests(
                         req -> req.requestMatchers("login/**", "/register/**", "/refreshToken/**").permitAll().
                                 requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN").
-                                requestMatchers("/api/v1/user/**").hasAuthority("USER").anyRequest().authenticated()).
+                                requestMatchers("/api/v1/**").hasAuthority("USER").anyRequest().authenticated()).
                 userDetailsService(userService).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
                 addFilterBefore(jwtAuthenticationFiler, UsernamePasswordAuthenticationFilter.class).build();

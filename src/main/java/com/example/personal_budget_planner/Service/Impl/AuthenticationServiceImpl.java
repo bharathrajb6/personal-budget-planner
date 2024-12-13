@@ -1,6 +1,7 @@
 package com.example.personal_budget_planner.Service.Impl;
 
 import com.example.personal_budget_planner.DTO.Request.UserRequest;
+import com.example.personal_budget_planner.Exceptions.UserException;
 import com.example.personal_budget_planner.Mapper.UserMapper;
 import com.example.personal_budget_planner.Model.Token;
 import com.example.personal_budget_planner.Model.User;
@@ -17,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+
+import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
 @Service
 @Slf4j
@@ -43,8 +46,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String register(UserRequest request) {
         if (userRepository.findById(request.getUsername()).isPresent()) {
-            throw new RuntimeException("User already exists");
+            throw new UserException("User already exists");
         }
+        validateUserDetails(request);
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
