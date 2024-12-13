@@ -1,6 +1,6 @@
 package com.example.personal_budget_planner.Model;
 
-public enum Role {
-    USER,
-    ADMIN
+public enum TransactionType {
+    INCOME,
+    EXPENSE
 }
