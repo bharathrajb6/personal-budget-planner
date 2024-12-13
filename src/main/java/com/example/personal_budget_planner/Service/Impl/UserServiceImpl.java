@@ -10,9 +10,11 @@ import com.example.personal_budget_planner.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
+@Service
 public class UserServiceImpl implements UserService {
 
     @Autowired
