@@ -18,7 +18,7 @@ spring:
 
 logging:
   file:
-    name: user-service/logs/app.log
+    name: logs/app.log
   level:
     root: DEBUG
 
