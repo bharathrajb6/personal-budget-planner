@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+import static com.example.personal_budget_planner.Messages.SavingGoal.SavingGoalExceptionMessages.*;
+
 @Service
 @Slf4j
 public class SavingGoalServiceImpl implements SavingGoalInterface {
@@ -43,7 +45,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
         try {
             savingGoalRepository.save(savingGoal);
         } catch (Exception exception) {
-            throw new GoalException(exception.getMessage());
+            throw new GoalException(String.format(UNABLE_TO_SAVE_GOAL, exception.getMessage()));
         }
         return getGoal(savingGoal.getGoalID());
     }
@@ -56,7 +58,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      */
     @Override
     public SavingGoalResponse getGoal(String username) {
-        SavingGoal savingGoal = savingGoalRepository.findByUsername(username).orElseThrow(() -> new GoalException("Goal not found"));
+        SavingGoal savingGoal = savingGoalRepository.findByUsername(username).orElseThrow(() -> new GoalException(String.format(GOAL_NOT_FOUND, username)));
         return goalMapper.toSavingGoalResponse(savingGoal);
     }
 
@@ -69,7 +71,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      */
     @Override
     public SavingGoalResponse updateGoal(String goalID, SavingGoalRequest request) {
-        SavingGoal existingSavingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> new GoalException("Goal Not found"));
+        SavingGoal existingSavingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> new GoalException(String.format(GOAL_NOT_FOUND, goalID)));
 
         SavingGoal newGoal = goalMapper.toSavingGoal(request);
         if (existingSavingGoal != null) {
@@ -77,7 +79,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
                 savingGoalRepository.updateSavingGoal(newGoal.getMonthlyTarget(), newGoal.getYearlyTarget(), newGoal.getCurrentSavings(), newGoal.getGoalID());
                 return getGoal(existingSavingGoal.getGoalID());
             } catch (Exception exception) {
-                throw new GoalException(exception.getMessage());
+                throw new GoalException(String.format(UNABLE_TO_UPDATE_GOAL, exception.getMessage()));
             }
         }
         return getGoal(goalID);
@@ -103,7 +105,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
                 updatedAmount -= amount;
                 break;
             default:
-                throw new GoalException("Invalid operation");
+                throw new GoalException(INVALID_OPERATION);
         }
         try {
             savingGoalRepository.updateSavingGoal(savingGoal.getMonthlyTarget(), savingGoal.getYearlyTarget(), updatedAmount, savingGoal.getGoalID());
@@ -119,7 +121,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      */
     @Override
     public void deleteGoal(String goalID) {
-        SavingGoal savingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> new GoalException("Goal not found"));
+        SavingGoal savingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> new GoalException(String.format(GOAL_NOT_FOUND, goalID)));
         try {
             savingGoalRepository.delete(savingGoal);
         } catch (Exception exception) {

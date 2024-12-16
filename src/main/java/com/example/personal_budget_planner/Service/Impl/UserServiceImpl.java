@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.*;
 import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
 @Service
@@ -47,7 +48,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserDetails() {
         String username = getUsername();
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserException("User not found"));
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new UserException(String.format(USER_NOT_FOUND, username)));
         return userMapper.toUserResponse(user);
     }
 
@@ -60,7 +61,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse updateUserDetails(UserRequest userRequest) {
         if (userRequest == null) {
-            throw new UserException("User data cannot be null");
+            throw new UserException(USER_ENTITY_CANNOT_NULL);
         }
         validateUserDetails(userRequest);
         User user = userMapper.toUser(userRequest);
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
             }
             return getUserDetails();
         } else {
-            throw new UserException("Password cannot be null");
+            throw new UserException(PASSWORD_CANNOT_NULL);
         }
     }
 }

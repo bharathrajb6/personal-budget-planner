@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.USER_ALREADY_EXISTS;
 import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
 @Service
@@ -51,7 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String register(UserRequest request) {
         if (userRepository.findById(request.getUsername()).isPresent()) {
-            throw new UserException("User already exists");
+            throw new UserException(String.format(USER_ALREADY_EXISTS, request.getUsername()));
         }
         validateUserDetails(request);
         User user = userMapper.toUser(request);

@@ -7,6 +7,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.USER_NOT_FOUND;
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
@@ -27,6 +29,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
+        return userRepository.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException(String.format(USER_NOT_FOUND, username)));
     }
 }
