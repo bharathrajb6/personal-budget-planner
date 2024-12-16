@@ -3,6 +3,8 @@ package com.example.personal_budget_planner.Service;
 import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 
+import java.util.List;
+
 public interface TransactionService {
 
     TransactionResponse addTransaction(TransactionRequest request);
@@ -10,4 +12,8 @@ public interface TransactionService {
     TransactionResponse getTransaction(String transactionID);
 
     void deleteTransaction(String transactionID);
+
+    List<TransactionResponse> getAllTransactionForUser();
+
+    TransactionResponse updateTransaction(String transactionID, TransactionRequest request);
 }

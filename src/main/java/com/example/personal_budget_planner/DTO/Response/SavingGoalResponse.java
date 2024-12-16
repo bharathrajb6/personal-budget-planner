@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class SavingGoalResponse {
+    private String username;
     private double monthlyTarget;
     private double yearlyTarget;
     private double currentSavings;

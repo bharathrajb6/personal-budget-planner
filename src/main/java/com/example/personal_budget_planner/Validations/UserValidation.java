@@ -2,7 +2,9 @@ package com.example.personal_budget_planner.Validations;
 
 import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.Exceptions.UserException;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public class UserValidation {
 
     public static void validateUserDetails(UserRequest request) {

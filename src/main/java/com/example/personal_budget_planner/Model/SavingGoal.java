@@ -10,7 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "savingGoal")
+@Table(name = "saving_goal")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,12 +24,12 @@ public class SavingGoal {
     @Column(name = "username")
     private String username;
 
-    @Column(name = "monthlyTarget")
+    @Column(name = "monthly_target")
     private double monthlyTarget;
 
-    @Column(name = "yearlyTarget")
+    @Column(name = "yearly_target")
     private double yearlyTarget;
 
-    @Column(name = "currentSavings")
+    @Column(name = "current_savings")
     private double currentSavings;
 }

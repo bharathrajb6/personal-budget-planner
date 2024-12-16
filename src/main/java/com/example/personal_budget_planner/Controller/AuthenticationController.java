@@ -8,9 +8,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @CrossOrigin
 public class AuthenticationController {
+    private final AuthenticationServiceImpl authenticationService;
 
+    /**
+     * Adding Authentication Service dependency
+     *
+     * @param authenticationService
+     */
     @Autowired
-    private AuthenticationServiceImpl authenticationService;
+    public AuthenticationController(AuthenticationServiceImpl authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     /***
      * Register a new user

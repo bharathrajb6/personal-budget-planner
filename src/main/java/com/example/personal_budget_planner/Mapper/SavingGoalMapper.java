@@ -8,7 +8,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface SavingGoalMapper {
 
-    SavingGoalResponse toResponse(SavingGoal savingGoal);
+    SavingGoalResponse toSavingGoalResponse(SavingGoal savingGoal);
 
     SavingGoal toSavingGoal(SavingGoalRequest request);
 }
