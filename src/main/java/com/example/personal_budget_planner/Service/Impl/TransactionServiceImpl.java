@@ -10,7 +10,6 @@ import com.example.personal_budget_planner.Repository.TransactionRepository;
 import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -25,29 +24,39 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
     private final SavingGoalServiceImpl savingGoalService;
+    private final UserServiceImpl userService;
 
     @Autowired
-    public TransactionServiceImpl(TransactionMapper transactionMapper, TransactionRepository transactionRepository, SavingGoalServiceImpl savingGoalService) {
+    public TransactionServiceImpl(TransactionMapper transactionMapper, TransactionRepository transactionRepository, SavingGoalServiceImpl savingGoalService, UserServiceImpl userService) {
         this.transactionMapper = transactionMapper;
         this.transactionRepository = transactionRepository;
         this.savingGoalService = savingGoalService;
+        this.userService = userService;
     }
 
-    public String getUsername() {
-        return SecurityContextHolder.getContext().getAuthentication().getName();
-    }
-
+    /**
+     * This method is used to add the transaction to database
+     *
+     * @param request
+     * @return
+     */
     @Override
     public TransactionResponse addTransaction(TransactionRequest request) {
         Transaction transaction = transactionMapper.toTransaction(request);
         transaction.setTransactionID(UUID.randomUUID().toString());
         transaction.setTransactionDate(Timestamp.from(Instant.now()));
-        transaction.setUsername(getUsername());
+        transaction.setUsername(userService.getUsername());
         transactionRepository.save(transaction);
         savingGoalService.updateCurrentSavings(transaction.getAmount(), transaction.getType());
         return getTransaction(transaction.getTransactionID());
     }
 
+    /**
+     * This method is used to fetch the transaction details from database using its ID
+     *
+     * @param transactionID
+     * @return
+     */
     @Override
     public TransactionResponse getTransaction(String transactionID) {
         try {
@@ -58,12 +67,22 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * This method will fetch all the transaction for the user
+     *
+     * @return
+     */
     @Override
     public List<TransactionResponse> getAllTransactionForUser() {
-        List<Transaction> transactions = transactionRepository.findAllTransactionForUser(getUsername());
+        List<Transaction> transactions = transactionRepository.findAllTransactionForUser(userService.getUsername());
         return transactionMapper.toTransactionResponseList(transactions);
     }
 
+    /**
+     * This method will delete the transaction of the user
+     *
+     * @param transactionID
+     */
     @Override
     public void deleteTransaction(String transactionID) {
         try {
@@ -73,6 +92,13 @@ public class TransactionServiceImpl implements TransactionService {
         }
     }
 
+    /**
+     * This method will update the transaction
+     *
+     * @param transactionID
+     * @param request
+     * @return
+     */
     @Override
     public TransactionResponse updateTransaction(String transactionID, TransactionRequest request) {
         Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> new TransactionException("Transaction not found"));

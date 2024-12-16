@@ -30,10 +30,20 @@ public class UserServiceImpl implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    /**
+     * This method will return username of the current user
+     *
+     * @return
+     */
     public String getUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
+    /**
+     * This method will return details of the user
+     *
+     * @return
+     */
     @Override
     public UserResponse getUserDetails() {
         String username = getUsername();
@@ -41,7 +51,12 @@ public class UserServiceImpl implements UserService {
         return userMapper.toUserResponse(user);
     }
 
-
+    /**
+     * This method will update the user details in database
+     *
+     * @param userRequest
+     * @return
+     */
     @Override
     public UserResponse updateUserDetails(UserRequest userRequest) {
         if (userRequest == null) {
@@ -57,7 +72,12 @@ public class UserServiceImpl implements UserService {
         return getUserDetails();
     }
 
-
+    /**
+     * This method will update the password
+     *
+     * @param userRequest
+     * @return
+     */
     @Override
     public UserResponse updateUserPassword(UserRequest userRequest) {
         String username = getUsername();

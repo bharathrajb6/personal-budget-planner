@@ -12,5 +12,7 @@ public interface SavingGoalInterface {
 
     SavingGoalResponse updateGoal(String goalID, SavingGoalRequest request);
 
+    void deleteGoal(String goalID);
+
     void updateCurrentSavings(double amount, TransactionType operation);
 }

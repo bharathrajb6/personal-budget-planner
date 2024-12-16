@@ -7,6 +7,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserValidation {
 
+    /**
+     * This method will validate the user details
+     *
+     * @param request
+     */
     public static void validateUserDetails(UserRequest request) {
 
         if (request.getFirstName() == null || request.getFirstName().isEmpty()) {

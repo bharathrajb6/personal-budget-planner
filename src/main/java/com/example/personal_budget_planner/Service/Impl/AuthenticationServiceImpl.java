@@ -42,6 +42,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
+    /**
+     * This method is used to register the user
+     *
+     * @param request
+     * @return
+     */
     @Override
     public String register(UserRequest request) {
         if (userRepository.findById(request.getUsername()).isPresent()) {
@@ -56,6 +62,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return jwtToken;
     }
 
+    /**
+     * This method is used to handle the login
+     *
+     * @param request
+     * @return
+     */
     @Override
     public String login(UserRequest request) {
         Authentication authentication;
@@ -76,6 +88,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
+    /**
+     * This method is used to store the JWT token which is generated for the user to the database
+     *
+     * @param jwt_token
+     * @param user
+     */
     private void saveUserToken(String jwt_token, User user) {
         Token token = new Token();
         token.setTokenId(String.valueOf(UUID.randomUUID()));
@@ -86,6 +104,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         log.info("USER_TOKEN_SAVED_SUCCESSFULLY");
     }
 
+    /**
+     * This method will delete all the existing tokens which is generated for the user
+     *
+     * @param username
+     */
     private void revokeAllTokensForUser(String username) {
         List<Token> tokenList = tokenRepository.findAllTokens(username);
         if (!tokenList.isEmpty()) {

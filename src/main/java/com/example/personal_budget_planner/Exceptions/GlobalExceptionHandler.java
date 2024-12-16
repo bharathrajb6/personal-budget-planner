@@ -10,21 +10,42 @@ import org.springframework.web.context.request.WebRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
+    /**
+     * To handle User Exception
+     *
+     * @param exception
+     * @param request
+     * @return
+     */
     @ExceptionHandler(UserException.class)
     public ResponseEntity<?> handleUserException(UserException exception, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "User Error", exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * To handle Transaction Exception
+     *
+     * @param exception
+     * @param request
+     * @return
+     */
     @ExceptionHandler(TransactionException.class)
     public ResponseEntity<?> handleTransactionException(TransactionException exception, WebRequest request) {
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Transaction Error", exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(BudgetException.class)
-    public ResponseEntity<?> handleBudgetException(TransactionException exception, WebRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Budget Error", exception.getMessage());
+    /**
+     * To handle Saving Goal Exception
+     *
+     * @param exception
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(GoalException.class)
+    public ResponseEntity<?> handleGoalException(TransactionException exception, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Goal Error", exception.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 

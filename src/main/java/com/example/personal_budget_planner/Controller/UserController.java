@@ -18,17 +18,33 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * This method will return the user information
+     *
+     * @return
+     */
     @RequestMapping(value = "/user/getUserDetails", method = RequestMethod.GET)
     public UserResponse getUserDetails() {
         return userService.getUserDetails();
     }
 
-
+    /**
+     * This method is used to update the user details
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/user/updateUserDetails", method = RequestMethod.POST)
     public UserResponse updateUserDetails(@RequestBody UserRequest request) {
         return userService.updateUserDetails(request);
     }
 
+    /**
+     * This method is used to update the password
+     *
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/user/updatePassword", method = RequestMethod.POST)
     public UserResponse updatePassword(@RequestBody UserRequest request) {
         return userService.updateUserPassword(request);
