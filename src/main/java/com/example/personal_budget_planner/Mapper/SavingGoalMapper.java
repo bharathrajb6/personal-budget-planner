@@ -6,7 +6,7 @@ import com.example.personal_budget_planner.Model.SavingGoal;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
-public interface BudgetMapper {
+public interface SavingGoalMapper {
 
     SavingGoalResponse toResponse(SavingGoal savingGoal);
 
