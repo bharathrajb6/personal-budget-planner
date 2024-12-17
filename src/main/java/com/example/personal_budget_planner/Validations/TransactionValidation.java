@@ -6,24 +6,26 @@ import com.example.personal_budget_planner.Model.ExpenseCategory;
 import com.example.personal_budget_planner.Model.IncomeCategory;
 import com.example.personal_budget_planner.Model.TransactionType;
 
+import static com.example.personal_budget_planner.Messages.Transaction.TransactionExceptionMessages.*;
+
 public class TransactionValidation {
 
     public static void validateTransaction(TransactionRequest request) {
 
         if (request == null) {
-            throw new TransactionException("Transaction entity cannot be null");
+            throw new TransactionException(INVALID_TRANSACTION_ENTITY);
         }
 
         if (request.getAmount() < 0) {
-            throw new TransactionException("Amount should be greater than 0");
+            throw new TransactionException(INVALID_TRANSACTION_AMOUNT);
         }
 
         if (request.getCategory() == null || request.getCategory().isEmpty()) {
-            throw new TransactionException("Category cannot be null");
+            throw new TransactionException(INVALID_TRANSACTION_CATEGORY);
         }
 
         if (request.getType() == null || request.getType().toString().isEmpty()) {
-            throw new TransactionException("Transaction type cannot be null");
+            throw new TransactionException(INVALID_TRANSACTION_TYPE);
         }
 
         TransactionType type = request.getType();

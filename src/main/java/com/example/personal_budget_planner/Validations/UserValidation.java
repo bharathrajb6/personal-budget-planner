@@ -4,6 +4,8 @@ import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.Exceptions.UserException;
 import lombok.extern.slf4j.Slf4j;
 
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.*;
+
 @Slf4j
 public class UserValidation {
 
@@ -15,30 +17,30 @@ public class UserValidation {
     public static void validateUserDetails(UserRequest request) {
 
         if (request.getFirstName() == null || request.getFirstName().isEmpty()) {
-            throw new UserException("First Name cannot be null");
+            throw new UserException(INVALID_FIRST_NAME);
         }
         if (request.getLastName() == null || request.getLastName().isEmpty()) {
-            throw new UserException("Last Name cannot be empty");
+            throw new UserException(INVALID_LAST_NAME);
         }
 
         if (request.getEmail() == null || request.getEmail().isEmpty()) {
-            throw new UserException("Email cannot be empty");
+            throw new UserException(INVALID_EMAIL);
         }
 
         if (request.getUsername() == null || request.getUsername().isEmpty()) {
-            throw new UserException("username cannot be empty");
+            throw new UserException(INVALID_USERNAME);
         }
 
         if (request.getPassword() == null || request.getPassword().isEmpty()) {
-            throw new UserException("Password cannot be empty");
+            throw new UserException(PASSWORD_CANNOT_NULL);
         }
 
         if (request.getContactNumber() == null || request.getContactNumber().isEmpty()) {
-            throw new UserException("Contact Number cannot be empty");
+            throw new UserException(INVALID_CONTACT_NUMBER);
         }
 
         if (request.getRole() == null) {
-            throw new UserException("Role cannot be empty");
+            throw new UserException(INVALID_ROLE);
         }
 
     }
