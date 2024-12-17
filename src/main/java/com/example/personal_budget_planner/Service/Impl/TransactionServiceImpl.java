@@ -4,8 +4,6 @@ import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.Exceptions.TransactionException;
 import com.example.personal_budget_planner.Mapper.TransactionMapper;
-import com.example.personal_budget_planner.Model.ExpenseCategory;
-import com.example.personal_budget_planner.Model.IncomeCategory;
 import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.TransactionRepository;
@@ -20,6 +18,7 @@ import java.util.List;
 import java.util.UUID;
 
 import static com.example.personal_budget_planner.Messages.Transaction.TransactionExceptionMessages.*;
+import static com.example.personal_budget_planner.Validations.TransactionValidation.validateTransaction;
 
 @Service
 @Slf4j
@@ -47,6 +46,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse addTransaction(TransactionRequest request) {
 
+        validateTransaction(request);
         Transaction transaction = generateTransaction(request);
         try {
             transactionRepository.save(transaction);
@@ -108,46 +108,39 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse updateTransaction(String transactionID, TransactionRequest request) {
+
+        validateTransaction(request);
+
         Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID)));
+
         if (transaction != null) {
+
             double newAmount = request.getAmount();
             TransactionType newType = request.getType();
-            String newCategory = getCategoryFromRequest(request.getCategory(), newType);
+            String newCategory = request.getCategory();
+
             try {
                 transactionRepository.updateTransaction(newCategory, newAmount, newType, transactionID);
                 savingGoalService.updateCurrentSavings(newAmount, newType);
             } catch (Exception exception) {
                 throw new TransactionException(exception.getMessage());
             }
+
             return getTransaction(transactionID);
+
         } else {
             throw new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
         }
     }
 
-    public Transaction generateTransaction(TransactionRequest request) {
+    private Transaction generateTransaction(TransactionRequest request) {
         Transaction transaction = transactionMapper.toTransaction(request);
 
         transaction.setTransactionID(UUID.randomUUID().toString());
-        transaction.setTransactionDate(Timestamp.from(Instant.now()));
         transaction.setUsername(userService.getUsername());
+        transaction.setTransactionDate(Timestamp.from(Instant.now()));
 
-        String category = transaction.getCategory();
-        transaction.setCategory(getCategoryFromRequest(category, request.getType()));
         return transaction;
     }
 
-    private String getCategoryFromRequest(String category, TransactionType type) {
-
-        if (type == TransactionType.EXPENSE) {
-            ExpenseCategory expenseCategory = ExpenseCategory.valueOf(category);
-            return expenseCategory.toString();
-        }
-
-        if (type == TransactionType.INCOME) {
-            IncomeCategory incomeCategory = IncomeCategory.valueOf(category);
-            return incomeCategory.toString();
-        }
-        return null;
-    }
 }

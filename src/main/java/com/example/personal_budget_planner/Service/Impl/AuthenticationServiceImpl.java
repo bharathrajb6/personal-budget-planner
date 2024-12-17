@@ -19,7 +19,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
-import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.USER_ALREADY_EXISTS;
+import static com.example.personal_budget_planner.Messages.User.UserMessages.*;
 import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
 @Service
@@ -52,12 +52,25 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public String register(UserRequest request) {
         if (userRepository.findById(request.getUsername()).isPresent()) {
+            log.error(USER_ALREADY_EXISTS, request.getUsername());
             throw new UserException(String.format(USER_ALREADY_EXISTS, request.getUsername()));
         }
+        // Validate the user details
         validateUserDetails(request);
+
+        // Convert the UserRequest object to User model
         User user = userMapper.toUser(request);
+
+        // Encode the password
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+
+        try {
+            userRepository.save(user);
+            log.info(USER_DATA_SAVED_SUCCESSFULLY, request.getUsername());
+        } catch (Exception exception) {
+            throw new UserException(String.format(UNABLE_TO_SAVE_USER_DATA, user.getUsername(), exception.getMessage()));
+        }
+        // Generate new JWT token for the user
         String jwtToken = jwtService.generateToken(user);
         saveUserToken(jwtToken, user);
         return jwtToken;
@@ -101,8 +114,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         token.setToken(jwt_token);
         token.setUser(user);
         token.setLoggedOut(false);
-        tokenRepository.save(token);
-        log.info("USER_TOKEN_SAVED_SUCCESSFULLY");
+        try {
+            tokenRepository.save(token);
+            log.info(JWT_TOKEN_FOR_USER_SAVED_SUCCESS);
+        } catch (Exception exception) {
+            throw new UserException(String.format(UNABLE_TO_SAVE_JWT_TOKEN, exception.getMessage()));
+        }
     }
 
     /**
@@ -115,6 +132,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         if (!tokenList.isEmpty()) {
             tokenList.forEach(t -> t.setLoggedOut(true));
         }
-        tokenRepository.deleteAll(tokenList);
+        try {
+            tokenRepository.deleteAll(tokenList);
+            log.info(JWT_TOKEN_FOR_USER_DELETED_SUCCESS);
+        } catch (Exception exception) {
+            String message = String.format(UNABLE_TO_DELETE_ALL_OLD_TOKENS, username, exception.getMessage());
+            log.error(message);
+            throw new UserException(message);
+        }
     }
 }

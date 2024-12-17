@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.UUID;
 
 import static com.example.personal_budget_planner.Messages.SavingGoal.SavingGoalExceptionMessages.*;
+import static com.example.personal_budget_planner.Validations.GoalValidation.validateGoalDetails;
 
 @Service
 @Slf4j
@@ -39,6 +40,9 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      */
     @Override
     public SavingGoalResponse setGoal(SavingGoalRequest request) {
+
+        validateGoalDetails(request);
+
         SavingGoal savingGoal = goalMapper.toSavingGoal(request);
         savingGoal.setGoalID(UUID.randomUUID().toString());
         savingGoal.setUsername(userService.getUsername());
@@ -71,6 +75,8 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      */
     @Override
     public SavingGoalResponse updateGoal(String goalID, SavingGoalRequest request) {
+
+        validateGoalDetails(request);
         SavingGoal existingSavingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> new GoalException(String.format(GOAL_NOT_FOUND, goalID)));
 
         SavingGoal newGoal = goalMapper.toSavingGoal(request);

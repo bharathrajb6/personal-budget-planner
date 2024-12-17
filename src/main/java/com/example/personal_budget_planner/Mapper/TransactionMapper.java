@@ -13,5 +13,6 @@ public interface TransactionMapper {
     Transaction toTransaction(TransactionRequest request);
 
     TransactionResponse toTransactionResponse(Transaction transaction);
+
     List<TransactionResponse> toTransactionResponseList(List<Transaction> transaction);
 }
