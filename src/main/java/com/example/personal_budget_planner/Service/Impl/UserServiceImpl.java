@@ -13,7 +13,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import static com.example.personal_budget_planner.Messages.User.UserMessages.*;
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.*;
+import static com.example.personal_budget_planner.Messages.User.UserLogMessages.*;
 import static com.example.personal_budget_planner.Validations.UserValidation.validateUserDetails;
 
 @Service
@@ -49,8 +50,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserDetails() {
         String username = getUsername();
+        // Fetch the current user details
         User user = userRepository.findByUsername(username).orElseThrow(() -> {
-            log.error(USER_NOT_FOUND, username);
+            // If any come, then throw the exception
+            log.error(USER_DATA_NOT_FOUND, username);
             return new UserException(String.format(USER_NOT_FOUND, username));
         });
         return userMapper.toUserResponse(user);
@@ -64,16 +67,23 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public UserResponse updateUserDetails(UserRequest userRequest) {
+        // IF user request is null, then throw the exception
         if (userRequest == null) {
-            log.error(USER_ENTITY_CANNOT_NULL);
+            log.error(USER_DATA_CANNOT_NULL);
             throw new UserException(USER_ENTITY_CANNOT_NULL);
         }
+
+        // Validate the request object
         validateUserDetails(userRequest);
+
         User user = userMapper.toUser(userRequest);
+
         try {
+            // Update the user data
             userRepository.updateUserData(user.getFirstName(), user.getLastName(), user.getEmail(), user.getContactNumber(), user.getUsername());
             log.info(USER_DATA_UPDATED_SUCCESSFULLY, userRequest.getUsername());
         } catch (Exception exception) {
+            // If any come, then throw the exception
             log.error(UNABLE_TO_UPDATE_USER_DATA, userRequest.getUsername());
             throw new UserException(exception.getMessage());
         }
@@ -90,17 +100,22 @@ public class UserServiceImpl implements UserService {
     public UserResponse updateUserPassword(UserRequest userRequest) {
         String username = getUsername();
         String password = userRequest.getPassword();
+
         if (password != null && !password.isEmpty()) {
+            // Encode the password
             String encodedPassword = passwordEncoder.encode(password);
             try {
+                // Update the user password
                 userRepository.updateUserPassword(encodedPassword, username);
                 log.info(USER_PASSWORD_UPDATED_SUCCESSFULLY, username);
             } catch (Exception exception) {
+                // If any come, then throw the exception
                 log.error(UNABLE_TO_UPDATE_USER_PASSWORD, exception.getMessage());
                 throw new UserException(exception.getMessage());
             }
             return getUserDetails();
         } else {
+            // If any come, then throw the exception
             log.error(PASSWORD_CANNOT_NULL);
             throw new UserException(PASSWORD_CANNOT_NULL);
         }

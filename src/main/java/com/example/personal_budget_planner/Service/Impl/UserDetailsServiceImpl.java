@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.example.personal_budget_planner.Messages.User.UserMessages.USER_NOT_FOUND;
+import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.USER_NOT_FOUND;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
