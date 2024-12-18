@@ -1,6 +1,7 @@
 package com.example.personal_budget_planner.Service.Impl;
 
 import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
+import com.example.personal_budget_planner.DTO.Response.SavingGoalResponse;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.Exceptions.TransactionException;
 import com.example.personal_budget_planner.Mapper.TransactionMapper;
@@ -63,7 +64,7 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         // Update the current savings amount based on transaction type
-        savingGoalService.updateCurrentSavings(transaction.getAmount(), transaction.getType());
+        savingGoalService.updateCurrentSavingsForNewTransaction(transaction.getAmount(), transaction.getType());
         return getTransaction(transaction.getTransactionID());
     }
 
@@ -75,14 +76,14 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse getTransaction(String transactionID) {
-
+        // Fetch the transaction details from database
         Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() ->
         {
+            // If any issue come, then throw the exception
             log.error(String.format(UNABLE_TO_FIND_TRANSACTION, transactionID));
             return new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
         });
         return transactionMapper.toTransactionResponse(transaction);
-
     }
 
     /**
@@ -105,9 +106,11 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public void deleteTransaction(String transactionID) {
         try {
+            // Delete the transaction by using its ID
             transactionRepository.deleteById(transactionID);
             log.info(String.format(TRANSACTION_DELETED_SUCCESSFULLY, transactionID));
         } catch (Exception exception) {
+            // If any issue come, then throw the exception
             log.error(String.format(UNABLE_TO_DELETE_TRANSACTION, exception.getMessage()));
             throw new TransactionException(String.format(UNABLE_DELETE_TRANSACTION, exception.getMessage()));
         }
@@ -122,30 +125,34 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse updateTransaction(String transactionID, TransactionRequest request) {
-
+        // Validate the transaction request object
         validateTransaction(request);
 
-        Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID)));
+        // Find the transaction by using its id
+        Transaction oldTransaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID)));
 
-        if (transaction != null) {
-
-            double newAmount = request.getAmount();
-            TransactionType newType = request.getType();
-            String newCategory = request.getCategory();
+        if (oldTransaction != null) {
 
             try {
-                transactionRepository.updateTransaction(newCategory, newAmount, newType, transactionID);
-                savingGoalService.updateCurrentSavings(newAmount, newType);
+                // Update the transaction details
+                transactionRepository.updateTransaction(request.getCategory(), request.getAmount(), request.getType(), transactionID);
+
+                updateSavingsData(oldTransaction, request);
+
+                log.info(String.format(TRANSACTION_UPDATED_SUCCESSFULLY, transactionID));
             } catch (Exception exception) {
-                throw new TransactionException(exception.getMessage());
+                // If any issue come, then throw the exception
+                log.error(String.format(UNABLE_TO_UPDATE_TRANSACTION, exception.getMessage()));
+                throw new TransactionException(String.format(UNABLE_UPDATE_TRANSACTION, exception.getMessage()));
             }
-
             return getTransaction(transactionID);
-
         } else {
+            // If any issue come, then throw the exception
+            log.error(String.format(UNABLE_TO_FIND_TRANSACTION, transactionID));
             throw new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
         }
     }
+
 
     private Transaction generateTransaction(TransactionRequest request) {
         // Convert the request object to transaction model
@@ -159,6 +166,36 @@ public class TransactionServiceImpl implements TransactionService {
         transaction.setTransactionDate(Timestamp.from(Instant.now()));
 
         return transaction;
+    }
+
+    private void updateSavingsData(Transaction oldTransaction, TransactionRequest request) {
+        double oldAmount = oldTransaction.getAmount();
+        TransactionType oldType = oldTransaction.getType();
+
+        SavingGoalResponse savingGoal = savingGoalService.getGoal(userService.getUsername());
+
+        double newAmount = request.getAmount();
+        TransactionType newType = request.getType();
+
+        double totalAmount = 0;
+
+        if (oldType.toString().equals(TransactionType.INCOME.toString())) {
+            if (newType.toString().equals(TransactionType.INCOME.toString())) {
+                totalAmount = (savingGoal.getCurrentSavings() - oldAmount) + newAmount;
+            } else {
+                totalAmount = savingGoal.getCurrentSavings() - oldAmount - newAmount;
+            }
+        }
+
+        if (oldType.toString().equals(TransactionType.EXPENSE.toString())) {
+            if (newType.toString().equals(TransactionType.EXPENSE.toString())) {
+                totalAmount = (savingGoal.getCurrentSavings() + oldAmount) - newAmount;
+            } else {
+                totalAmount = savingGoal.getCurrentSavings() + oldAmount + newAmount;
+            }
+        }
+        // Update the current savings after updating the transaction
+        savingGoalService.updateCurrentSavingsForExistingTransaction(totalAmount, userService.getUsername());
     }
 
 }

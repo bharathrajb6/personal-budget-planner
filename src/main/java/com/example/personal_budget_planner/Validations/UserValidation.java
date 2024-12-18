@@ -2,6 +2,7 @@ package com.example.personal_budget_planner.Validations;
 
 import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.Exceptions.UserException;
+import com.example.personal_budget_planner.Model.Role;
 import lombok.extern.slf4j.Slf4j;
 
 import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.*;
@@ -41,6 +42,12 @@ public class UserValidation {
 
         if (request.getRole() == null) {
             throw new UserException(INVALID_ROLE);
+        }
+
+        try {
+            Role.valueOf(request.getRole().toString());
+        } catch (Exception exception) {
+            throw new UserException(INVALID_ROLE_VALUE);
         }
 
     }

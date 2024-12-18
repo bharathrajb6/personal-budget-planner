@@ -6,6 +6,8 @@ import com.example.personal_budget_planner.Service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1")
@@ -38,6 +40,11 @@ public class TransactionController {
     @RequestMapping(value = "/transaction/{transactionID}", method = RequestMethod.GET)
     public TransactionResponse getTransaction(@PathVariable String transactionID) {
         return transactionService.getTransaction(transactionID);
+    }
+
+    @RequestMapping(value = "/transaction", method = RequestMethod.GET)
+    public List<TransactionResponse> getAllTransactions() {
+        return transactionService.getAllTransactionForUser();
     }
 
     /**

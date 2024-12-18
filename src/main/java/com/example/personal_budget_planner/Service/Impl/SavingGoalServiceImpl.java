@@ -58,7 +58,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
             log.error(String.format(UNABLE_TO_SAVE_THE_GOAL, exception.getMessage()));
             throw new GoalException(String.format(UNABLE_TO_SAVE_GOAL, exception.getMessage()));
         }
-        return getGoal(savingGoal.getGoalID());
+        return getGoal(savingGoal.getUsername());
     }
 
     /**
@@ -121,7 +121,8 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      * @param operation
      */
     @Override
-    public void updateCurrentSavings(double amount, TransactionType operation) {
+    public void updateCurrentSavingsForNewTransaction(double amount, TransactionType operation) {
+
         // Fetch the goal details from database
         SavingGoal savingGoal = savingGoalRepository.findByUsername(userService.getUsername()).orElseThrow(() -> {
             log.error(UNABLE_TO_FETCH_THE_GOAL);
@@ -151,6 +152,16 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
         }
     }
 
+    @Override
+    public void updateCurrentSavingsForExistingTransaction(double amount, String username) {
+        // Fetch the goal details from database
+        try {
+            savingGoalRepository.updateCurrentSavings(amount, username);
+        } catch (Exception exception) {
+            throw new GoalException("Unable to update");
+        }
+    }
+
     /**
      * This method is used to delete the goal using its ID
      *
@@ -173,5 +184,4 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
             throw new GoalException(String.format(UNABLE_TO_DELETE_GOAL, exception.getMessage()));
         }
     }
-
 }

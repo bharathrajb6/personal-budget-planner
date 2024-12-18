@@ -14,4 +14,5 @@ public class UserExceptionMessages {
     public static final String INVALID_USERNAME = "Username cannot be null or empty";
     public static final String INVALID_CONTACT_NUMBER = "Contact Number cannot be null or empty";
     public static final String INVALID_ROLE = "Role cannot be null or empty";
+    public static final String INVALID_ROLE_VALUE = "Role value should be either USER OR ADMIN";
 }

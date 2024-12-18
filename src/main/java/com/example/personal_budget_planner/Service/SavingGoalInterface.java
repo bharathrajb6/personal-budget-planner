@@ -14,5 +14,7 @@ public interface SavingGoalInterface {
 
     void deleteGoal(String goalID);
 
-    void updateCurrentSavings(double amount, TransactionType operation);
+    void updateCurrentSavingsForNewTransaction(double amount, TransactionType operation);
+
+    void updateCurrentSavingsForExistingTransaction(double amount, String username);
 }
