@@ -15,6 +15,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -51,6 +52,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @return
      */
     @Override
+    @Transactional
     public String register(UserRequest request) {
         // Check if username is already existed in database
         if (userRepository.findById(request.getUsername()).isPresent()) {
@@ -123,6 +125,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      * @param jwt_token
      * @param user
      */
+    @Transactional
     private void saveUserToken(String jwt_token, User user) {
 
         Token token = new Token();
@@ -147,6 +150,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
      *
      * @param username
      */
+    @Transactional
     private void revokeAllTokensForUser(String username) {
         // Fetch all the tokens for this username
         List<Token> tokenList = tokenRepository.findAllTokens(username);

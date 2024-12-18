@@ -11,6 +11,7 @@ import com.example.personal_budget_planner.Service.SavingGoalInterface;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -40,6 +41,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      * @return
      */
     @Override
+    @Transactional
     public SavingGoalResponse setGoal(SavingGoalRequest request) {
         // Validate the goal object
         validateGoalDetails(request);
@@ -86,6 +88,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      * @return
      */
     @Override
+    @Transactional
     public SavingGoalResponse updateGoal(String goalID, SavingGoalRequest request) {
 
         // Validate the goal request
@@ -121,6 +124,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      * @param operation
      */
     @Override
+    @Transactional
     public void updateCurrentSavingsForNewTransaction(double amount, TransactionType operation) {
 
         // Fetch the goal details from database
@@ -153,6 +157,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
     }
 
     @Override
+    @Transactional
     public void updateCurrentSavingsForExistingTransaction(double amount, String username) {
         // Fetch the goal details from database
         try {
@@ -168,6 +173,7 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
      * @param goalID
      */
     @Override
+    @Transactional
     public void deleteGoal(String goalID) {
         // Fetch the goal by using goal ID
         SavingGoal savingGoal = savingGoalRepository.findByGoalID(goalID).orElseThrow(() -> {

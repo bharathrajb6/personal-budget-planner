@@ -12,6 +12,7 @@ import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -49,6 +50,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
+    @Transactional
     public TransactionResponse addTransaction(TransactionRequest request) {
 
         // Validate the transaction request object
@@ -107,6 +109,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @param transactionID
      */
     @Override
+    @Transactional
     public void deleteTransaction(String transactionID) {
         try {
             // Delete the transaction by using its ID
@@ -127,6 +130,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
+    @Transactional
     public TransactionResponse updateTransaction(String transactionID, TransactionRequest request) {
         // Validate the transaction request object
         validateTransaction(request);

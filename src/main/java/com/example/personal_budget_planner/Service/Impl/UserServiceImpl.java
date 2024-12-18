@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.*;
 import static com.example.personal_budget_planner.Messages.User.UserLogMessages.*;
@@ -66,6 +67,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public UserResponse updateUserDetails(UserRequest userRequest) {
         // IF user request is null, then throw the exception
         if (userRequest == null) {
@@ -97,6 +99,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     @Override
+    @Transactional
     public UserResponse updateUserPassword(UserRequest userRequest) {
         String username = getUsername();
         String password = userRequest.getPassword();
