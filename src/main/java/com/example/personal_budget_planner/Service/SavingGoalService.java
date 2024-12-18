@@ -4,7 +4,7 @@ import com.example.personal_budget_planner.DTO.Request.SavingGoalRequest;
 import com.example.personal_budget_planner.DTO.Response.SavingGoalResponse;
 import com.example.personal_budget_planner.Model.TransactionType;
 
-public interface SavingGoalInterface {
+public interface SavingGoalService {
 
     SavingGoalResponse setGoal(SavingGoalRequest request);
 
