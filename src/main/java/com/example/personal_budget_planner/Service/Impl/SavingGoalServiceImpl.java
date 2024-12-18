@@ -156,6 +156,12 @@ public class SavingGoalServiceImpl implements SavingGoalInterface {
         }
     }
 
+    /**
+     * This method will save the savings amount in database
+     *
+     * @param amount
+     * @param username
+     */
     @Override
     @Transactional
     public void updateCurrentSavingsForExistingTransaction(double amount, String username) {
