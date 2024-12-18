@@ -49,6 +49,12 @@ public class AdminServiceImpl implements AdminService {
         this.savingGoalService = savingGoalService;
     }
 
+    /**
+     * This method is used to get user data by username
+     *
+     * @param username
+     * @return
+     */
     @Override
     public UserResponse getUserData(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> {
@@ -57,33 +63,66 @@ public class AdminServiceImpl implements AdminService {
         return userMapper.toUserResponse(user);
     }
 
+    /**
+     * This method is used to get all users data
+     *
+     * @return
+     */
     @Override
     public List<UserResponse> getAllUsersData() {
         List<User> userList = userRepository.getAllUsers(Role.USER);
         return userMapper.toUserResponseList(userList);
     }
 
+    /**
+     * This method is used to get transaction data by transactionID
+     *
+     * @param transactionID
+     * @return
+     */
     @Override
     public TransactionResponse getTransactionByID(String transactionID) {
         return transactionService.getTransaction(transactionID);
     }
 
+    /**
+     * This method is used to get all transaction data
+     *
+     * @return
+     */
     @Override
     public List<TransactionResponse> getAllTransaction() {
         return transactionMapper.toTransactionResponseList(transactionRepository.findAll());
     }
 
+    /**
+     * This method is used to get all transaction data for a user
+     *
+     * @param username
+     * @return
+     */
     @Override
     public List<TransactionResponse> getAllTransactionForUser(String username) {
         List<Transaction> transactions = transactionRepository.findAllTransactionForUser(username);
         return transactionMapper.toTransactionResponseList(transactions);
     }
 
+    /**
+     * This method is used to get goal data by goalID
+     *
+     * @param goalID
+     * @return
+     */
     @Override
     public SavingGoalResponse getGoalDetails(String goalID) {
         return savingGoalService.getGoal(goalID);
     }
 
+    /**
+     * This method is used to get all goal data
+     *
+     * @return
+     */
     @Override
     public List<SavingGoalResponse> getAllGoals() {
         return goalMapper.toSavingGoalResponseList(savingGoalRepository.findAll());

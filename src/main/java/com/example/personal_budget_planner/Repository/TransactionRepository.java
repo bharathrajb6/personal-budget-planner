@@ -14,12 +14,32 @@ import java.util.Optional;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
 
+    /**
+     * This method is used to find a transaction by its transactionID
+     *
+     * @param transactionID
+     * @return
+     */
     @Query("SELECT t from Transaction t where t.transactionID = ?1")
     Optional<Transaction> findByTransactionID(String transactionID);
 
+    /**
+     * This method is used to find all transactions for a user
+     *
+     * @param username
+     * @return
+     */
     @Query("SELECT t from Transaction t where t.username = ?1")
     List<Transaction> findAllTransactionForUser(String username);
 
+    /**
+     * This method is used to update a transaction
+     *
+     * @param category
+     * @param amount
+     * @param type
+     * @param transactionID
+     */
     @Modifying
     @Transactional
     @Query("UPDATE Transaction t SET t.category = ?1, t.amount = ?2, t.type = ?3 where t.transactionID = ?4")

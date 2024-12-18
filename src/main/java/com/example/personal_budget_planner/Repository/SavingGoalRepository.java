@@ -11,15 +11,42 @@ import java.util.Optional;
 
 @Repository
 public interface SavingGoalRepository extends JpaRepository<SavingGoal, String> {
+
+    /**
+     * Find a saving goal by goalID
+     *
+     * @param goalID
+     * @return
+     */
     Optional<SavingGoal> findByGoalID(String goalID);
 
+    /**
+     * Find a saving goal by username
+     *
+     * @param username
+     * @return
+     */
     Optional<SavingGoal> findByUsername(String username);
 
+    /**
+     * Update a saving goal
+     *
+     * @param month
+     * @param year
+     * @param currentSavings
+     * @param goalID
+     */
     @Modifying
     @Transactional
     @Query("UPDATE SavingGoal s SET s.monthlyTarget = ?1, s.yearlyTarget = ?2, s.currentSavings = ?3 where s.goalID = ?4")
     void updateSavingGoal(double month, double year, double currentSavings, String goalID);
 
+    /**
+     * Update current savings for new transaction
+     *
+     * @param amount
+     * @param username
+     */
     @Modifying
     @Transactional
     @Query("UPDATE SavingGoal s SET s.currentSavings = ?1 where s.username = ?2")
