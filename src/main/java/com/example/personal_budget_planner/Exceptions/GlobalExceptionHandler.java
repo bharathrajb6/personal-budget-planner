@@ -49,4 +49,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * To handle redis cache exception
+     *
+     * @param cacheException
+     * @param request
+     * @return
+     */
+    @ExceptionHandler(CacheException.class)
+    public ResponseEntity<?> handleCacheException(CacheException cacheException, WebRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Cache Error", cacheException.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 }
