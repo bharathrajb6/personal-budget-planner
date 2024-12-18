@@ -15,6 +15,9 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -137,8 +140,8 @@ public class TransactionServiceImpl implements TransactionService {
                 // Update the transaction details
                 transactionRepository.updateTransaction(request.getCategory(), request.getAmount(), request.getType(), transactionID);
 
+                // Update the current savings in goal
                 updateSavingsData(oldTransaction, request);
-
                 log.info(String.format(TRANSACTION_UPDATED_SUCCESSFULLY, transactionID));
             } catch (Exception exception) {
                 // If any issue come, then throw the exception
@@ -154,6 +157,12 @@ public class TransactionServiceImpl implements TransactionService {
     }
 
 
+    /**
+     * This method is used to generate the transaction object from request object
+     *
+     * @param request
+     * @return
+     */
     private Transaction generateTransaction(TransactionRequest request) {
         // Convert the request object to transaction model
         Transaction transaction = transactionMapper.toTransaction(request);
@@ -168,6 +177,12 @@ public class TransactionServiceImpl implements TransactionService {
         return transaction;
     }
 
+    /**
+     * This method is used to update the savings amount
+     *
+     * @param oldTransaction
+     * @param request
+     */
     private void updateSavingsData(Transaction oldTransaction, TransactionRequest request) {
         double oldAmount = oldTransaction.getAmount();
         TransactionType oldType = oldTransaction.getType();
@@ -198,4 +213,38 @@ public class TransactionServiceImpl implements TransactionService {
         savingGoalService.updateCurrentSavingsForExistingTransaction(totalAmount, userService.getUsername());
     }
 
+    /**
+     * This method will return the list of transaction based on given time range
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    @Override
+    public List<TransactionResponse> getFilteredTransaction(String start, String end) {
+        LocalDate startDate;
+        LocalDate endDate;
+        try {
+            // Convert the given start and end string to date objects
+            startDate = LocalDate.parse(start);
+            endDate = LocalDate.parse(end);
+        } catch (DateTimeParseException dateTimeParseException) {
+            // If any issue come, throw the exception
+            throw new TransactionException(UNABLE_TO_PARSE_DATE + dateTimeParseException.getMessage());
+        }
+        List<TransactionResponse> filterTransaction = new ArrayList<>(); // to store filtered transactions
+        // Check if start end date is after the start date
+        if (endDate.isAfter(startDate) || endDate.equals(startDate)) {
+            List<TransactionResponse> transactionResponses = getAllTransactionForUser();
+            for (TransactionResponse transactionResponse : transactionResponses) {
+                Timestamp createdAt = transactionResponse.getTransactionDate();
+                LocalDate createdDate = createdAt.toLocalDateTime().toLocalDate();
+                if ((createdDate.isAfter(startDate) && createdDate.isBefore(endDate)) || createdDate.equals(startDate) || createdDate.equals(endDate)) {
+                    log.info(String.format(TRANSACTION_ADDED_TO_FILTER, transactionResponse.getTransactionID()));
+                    filterTransaction.add(transactionResponse);
+                }
+            }
+        }
+        return filterTransaction;
+    }
 }

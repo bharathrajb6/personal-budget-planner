@@ -9,4 +9,5 @@ public class TransactionLogMessages {
     public static final String TRANSACTION_UPDATED_SUCCESSFULLY = "Transaction %s has been updated successfully";
     public static final String UNABLE_TO_DELETE_TRANSACTION = "Unable to delete the transaction. Reason - %s";
     public static final String UNABLE_TO_UPDATE_TRANSACTION = "Unable to update the transaction. Reason - %s";
+    public static final String TRANSACTION_ADDED_TO_FILTER = "Transaction %s has been to filtered list";
 }

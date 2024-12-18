@@ -68,4 +68,9 @@ public class TransactionController {
     public void deleteTransaction(@PathVariable String transactionID) {
         transactionService.deleteTransaction(transactionID);
     }
+
+    @RequestMapping(value = "/transaction/filter", method = RequestMethod.GET)
+    public List<TransactionResponse> getTransactionFilter(@RequestParam("start") String start, @RequestParam("end") String end){
+        return transactionService.getFilteredTransaction(start,end);
+    }
 }

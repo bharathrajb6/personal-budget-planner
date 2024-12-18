@@ -16,4 +16,6 @@ public interface TransactionService {
     List<TransactionResponse> getAllTransactionForUser();
 
     TransactionResponse updateTransaction(String transactionID, TransactionRequest request);
+
+    List<TransactionResponse> getFilteredTransaction(String start, String end);
 }

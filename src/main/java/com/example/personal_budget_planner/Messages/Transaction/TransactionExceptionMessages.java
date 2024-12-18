@@ -10,4 +10,5 @@ public class TransactionExceptionMessages {
     public static final String INVALID_TRANSACTION_AMOUNT = "Amount should be greater than 0";
     public static final String INVALID_TRANSACTION_CATEGORY = "Category cannot be null or empty";
     public static final String INVALID_TRANSACTION_TYPE = "Transaction type cannot be null or empty";
+    public static final String UNABLE_TO_PARSE_DATE = "Unable to parse the date ";
 }
