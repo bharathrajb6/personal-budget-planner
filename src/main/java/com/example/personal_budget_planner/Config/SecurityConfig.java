@@ -32,6 +32,7 @@ public class SecurityConfig {
                 authorizeHttpRequests(
                         req -> req.requestMatchers("login/**", "/register/**", "/refreshToken/**").permitAll().
                                 requestMatchers("/api/v1/admin/**").hasAuthority("ADMIN").
+                                requestMatchers("/api/v1/**").hasAuthority("ADMIN").
                                 requestMatchers("/api/v1/**").hasAuthority("USER").anyRequest().authenticated()).
                 userDetailsService(userService).
                 sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).
