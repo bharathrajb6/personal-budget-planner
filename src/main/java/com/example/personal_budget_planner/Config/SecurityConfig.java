@@ -2,7 +2,7 @@ package com.example.personal_budget_planner.Config;
 
 import com.example.personal_budget_planner.Filter.JwtAuthenticationFilter;
 import com.example.personal_budget_planner.Service.Impl.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,13 +18,12 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsServiceImpl userService;
+    private final UserDetailsServiceImpl userService;
 
-    @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFiler;
+    private final JwtAuthenticationFilter jwtAuthenticationFiler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

@@ -2,23 +2,15 @@ package com.example.personal_budget_planner.Controller;
 
 import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.Service.Impl.AuthenticationServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
+@RequiredArgsConstructor
 public class AuthenticationController {
-    private final AuthenticationServiceImpl authenticationService;
 
-    /**
-     * Adding Authentication Service dependency
-     *
-     * @param authenticationService
-     */
-    @Autowired
-    public AuthenticationController(AuthenticationServiceImpl authenticationService) {
-        this.authenticationService = authenticationService;
-    }
+    private final AuthenticationServiceImpl authenticationService;
 
     /***
      * Register a new user

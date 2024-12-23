@@ -16,18 +16,18 @@ import com.example.personal_budget_planner.Repository.UserRepository;
 import com.example.personal_budget_planner.Service.AdminService;
 import com.example.personal_budget_planner.Service.SavingGoalService;
 import com.example.personal_budget_planner.Service.TransactionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 
 import static com.example.personal_budget_planner.Messages.User.UserExceptionMessages.USER_NOT_FOUND;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class AdminServiceImpl implements AdminService {
 
     private final UserRepository userRepository;
@@ -38,18 +38,6 @@ public class AdminServiceImpl implements AdminService {
     private final SavingGoalMapper goalMapper;
     private final TransactionService transactionService;
     private final SavingGoalService savingGoalService;
-
-    @Autowired
-    public AdminServiceImpl(UserRepository userRepository, TransactionRepository transactionRepository, SavingGoalRepository savingGoalRepository, UserMapper userMapper, TransactionMapper transactionMapper, SavingGoalMapper goalMapper, TransactionService transactionService, SavingGoalService savingGoalService) {
-        this.userRepository = userRepository;
-        this.transactionRepository = transactionRepository;
-        this.savingGoalRepository = savingGoalRepository;
-        this.userMapper = userMapper;
-        this.transactionMapper = transactionMapper;
-        this.goalMapper = goalMapper;
-        this.transactionService = transactionService;
-        this.savingGoalService = savingGoalService;
-    }
 
     /**
      * This method is used to get user data by username

@@ -8,6 +8,7 @@ import com.example.personal_budget_planner.Model.SavingGoal;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.SavingGoalRepository;
 import com.example.personal_budget_planner.Service.SavingGoalService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,18 +22,12 @@ import static com.example.personal_budget_planner.Validations.GoalValidation.val
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class SavingGoalServiceImpl implements SavingGoalService {
 
     private final SavingGoalMapper goalMapper;
     private final SavingGoalRepository savingGoalRepository;
     private final UserServiceImpl userService;
-
-    @Autowired
-    public SavingGoalServiceImpl(SavingGoalMapper goalMapper, SavingGoalRepository savingGoalRepository, UserServiceImpl userService) {
-        this.goalMapper = goalMapper;
-        this.savingGoalRepository = savingGoalRepository;
-        this.userService = userService;
-    }
 
     /**
      * This method is used to save the goal

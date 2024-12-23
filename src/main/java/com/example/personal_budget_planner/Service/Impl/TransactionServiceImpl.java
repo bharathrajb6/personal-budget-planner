@@ -9,6 +9,7 @@ import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.TransactionRepository;
 import com.example.personal_budget_planner.Service.TransactionService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,20 +31,13 @@ import static com.example.personal_budget_planner.Validations.TransactionValidat
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
     private final SavingGoalServiceImpl savingGoalService;
     private final UserServiceImpl userService;
-
-    @Autowired
-    public TransactionServiceImpl(TransactionMapper transactionMapper, TransactionRepository transactionRepository, SavingGoalServiceImpl savingGoalService, UserServiceImpl userService) {
-        this.transactionMapper = transactionMapper;
-        this.transactionRepository = transactionRepository;
-        this.savingGoalService = savingGoalService;
-        this.userService = userService;
-    }
 
     /**
      * This method is used to add the transaction to database

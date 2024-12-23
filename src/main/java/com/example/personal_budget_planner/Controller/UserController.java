@@ -3,20 +3,17 @@ package com.example.personal_budget_planner.Controller;
 import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.DTO.Response.UserResponse;
 import com.example.personal_budget_planner.Service.Impl.UserServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class UserController {
 
     private final UserServiceImpl userService;
-
-    @Autowired
-    public UserController(UserServiceImpl userService) {
-        this.userService = userService;
-    }
 
     /**
      * This method will return the user information

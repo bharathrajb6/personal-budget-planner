@@ -3,20 +3,16 @@ package com.example.personal_budget_planner.Controller;
 import com.example.personal_budget_planner.DTO.Request.SavingGoalRequest;
 import com.example.personal_budget_planner.DTO.Response.SavingGoalResponse;
 import com.example.personal_budget_planner.Service.Impl.SavingGoalServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @CrossOrigin
 @RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class SavingGoalController {
 
     private final SavingGoalServiceImpl savingGoalService;
-
-    @Autowired
-    public SavingGoalController(SavingGoalServiceImpl savingGoalService) {
-        this.savingGoalService = savingGoalService;
-    }
 
     /**
      * This method is used to add the savings goal

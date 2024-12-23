@@ -7,6 +7,7 @@ import com.example.personal_budget_planner.Mapper.UserMapper;
 import com.example.personal_budget_planner.Model.User;
 import com.example.personal_budget_planner.Repository.UserRepository;
 import com.example.personal_budget_planner.Service.UserService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,18 +21,12 @@ import static com.example.personal_budget_planner.Validations.UserValidation.val
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
-
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     /**
      * This method will return username of the current user
