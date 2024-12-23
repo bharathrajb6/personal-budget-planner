@@ -2,6 +2,8 @@ package com.example.personal_budget_planner.Service;
 
 import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -13,9 +15,9 @@ public interface TransactionService {
 
     void deleteTransaction(String transactionID);
 
-    List<TransactionResponse> getAllTransactionForUser();
+    Page<TransactionResponse> getAllTransactionForUser(Pageable pageable);
 
     TransactionResponse updateTransaction(String transactionID, TransactionRequest request);
 
-    List<TransactionResponse> getFilteredTransaction(String start, String end);
+    Page<TransactionResponse> getFilteredTransaction(String start, String end,Pageable pageable);
 }

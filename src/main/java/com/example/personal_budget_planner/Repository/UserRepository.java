@@ -2,6 +2,8 @@ package com.example.personal_budget_planner.Repository;
 
 import com.example.personal_budget_planner.Model.Role;
 import com.example.personal_budget_planner.Model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -55,5 +57,5 @@ public interface UserRepository extends JpaRepository<User, String> {
      * @return
      */
     @Query("SELECT u from User u where u.role = ?1")
-    List<User> getAllUsers(Role role);
+    Page<User> getAllUsers(Role role, Pageable pageable);
 }

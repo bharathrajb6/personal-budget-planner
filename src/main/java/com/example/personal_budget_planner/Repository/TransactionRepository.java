@@ -2,6 +2,8 @@ package com.example.personal_budget_planner.Repository;
 
 import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -13,6 +15,8 @@ import java.util.Optional;
 
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, String> {
+
+    Page<Transaction> findAll(Pageable pageable);
 
     /**
      * This method is used to find a transaction by its transactionID
@@ -30,7 +34,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
      * @return
      */
     @Query("SELECT t from Transaction t where t.username = ?1")
-    List<Transaction> findAllTransactionForUser(String username);
+    Page<Transaction> findAllTransactionForUser(String username, Pageable pageable);
 
     /**
      * This method is used to update a transaction

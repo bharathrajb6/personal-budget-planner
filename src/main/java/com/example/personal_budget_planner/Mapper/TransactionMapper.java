@@ -4,8 +4,11 @@ import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.Model.Transaction;
 import org.mapstruct.Mapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Mapper(componentModel = "spring")
 public interface TransactionMapper {
@@ -14,5 +17,12 @@ public interface TransactionMapper {
 
     TransactionResponse toTransactionResponse(Transaction transaction);
 
-    List<TransactionResponse> toTransactionResponseList(List<Transaction> transaction);
+    // Custom method to map Page<Transaction> to Page<TransactionResponse>
+    default Page<TransactionResponse> toTransactionResponseList(Page<Transaction> transactionPage) {
+        List<TransactionResponse> responses = transactionPage.getContent()
+                .stream()
+                .map(this::toTransactionResponse)
+                .collect(Collectors.toList());
+        return new PageImpl<>(responses, transactionPage.getPageable(), transactionPage.getTotalElements());
+    }
 }

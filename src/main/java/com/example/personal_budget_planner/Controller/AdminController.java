@@ -5,10 +5,10 @@ import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.DTO.Response.UserResponse;
 import com.example.personal_budget_planner.Service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/admin")
@@ -40,8 +40,8 @@ public class AdminController {
      * @return
      */
     @RequestMapping(value = "/getAllUsers", method = RequestMethod.GET)
-    public List<UserResponse> getAllUsers() {
-        return adminService.getAllUsersData();
+    public Page<UserResponse> getAllUsers(Pageable pageable) {
+        return adminService.getAllUsersData(pageable);
     }
 
     /**
@@ -50,8 +50,8 @@ public class AdminController {
      * @return
      */
     @RequestMapping(value = "/transaction", method = RequestMethod.GET)
-    public List<TransactionResponse> getAllTransactions() {
-        return adminService.getAllTransaction();
+    public Page<TransactionResponse> getAllTransactions(Pageable pageable) {
+        return adminService.getAllTransaction(pageable);
     }
 
     /**
@@ -72,8 +72,8 @@ public class AdminController {
      * @return
      */
     @RequestMapping(value = "/transaction/user/{username}", method = RequestMethod.GET)
-    public List<TransactionResponse> getAllGoalsByUsername(@PathVariable String username) {
-        return adminService.getAllTransactionForUser(username);
+    public Page<TransactionResponse> getAllGoalsByUsername(@PathVariable String username, Pageable pageable) {
+        return adminService.getAllTransactionForUser(username, pageable);
     }
 
     /**
@@ -82,8 +82,8 @@ public class AdminController {
      * @return
      */
     @RequestMapping(value = "/goal", method = RequestMethod.GET)
-    public List<SavingGoalResponse> getAllGoals() {
-        return adminService.getAllGoals();
+    public Page<SavingGoalResponse> getAllGoals(Pageable pageable) {
+        return adminService.getAllGoals(pageable);
     }
 
     /**

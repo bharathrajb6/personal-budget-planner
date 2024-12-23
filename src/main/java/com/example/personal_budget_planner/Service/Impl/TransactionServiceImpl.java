@@ -11,6 +11,9 @@ import com.example.personal_budget_planner.Repository.TransactionRepository;
 import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +21,6 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -82,8 +84,7 @@ public class TransactionServiceImpl implements TransactionService {
     @Override
     public TransactionResponse getTransaction(String transactionID) {
         // Fetch the transaction details from database
-        Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() ->
-        {
+        Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> {
             // If any issue come, then throw the exception
             log.error(String.format(UNABLE_TO_FIND_TRANSACTION, transactionID));
             return new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
@@ -97,9 +98,9 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
-    public List<TransactionResponse> getAllTransactionForUser() {
+    public Page<TransactionResponse> getAllTransactionForUser(Pageable pageable) {
         // Get all the transactions for specific user
-        List<Transaction> transactions = transactionRepository.findAllTransactionForUser(userService.getUsername());
+        Page<Transaction> transactions = transactionRepository.findAllTransactionForUser(userService.getUsername(), pageable);
         return transactionMapper.toTransactionResponseList(transactions);
     }
 
@@ -225,7 +226,7 @@ public class TransactionServiceImpl implements TransactionService {
      * @return
      */
     @Override
-    public List<TransactionResponse> getFilteredTransaction(String start, String end) {
+    public Page<TransactionResponse> getFilteredTransaction(String start, String end, Pageable pageable) {
         LocalDate startDate;
         LocalDate endDate;
         try {
@@ -236,19 +237,18 @@ public class TransactionServiceImpl implements TransactionService {
             // If any issue come, throw the exception
             throw new TransactionException(UNABLE_TO_PARSE_DATE + dateTimeParseException.getMessage());
         }
-        List<TransactionResponse> filterTransaction = new ArrayList<>(); // to store filtered transactions
+
         // Check if start end date is after the start date
-        if (endDate.isAfter(startDate) || endDate.equals(startDate)) {
-            List<TransactionResponse> transactionResponses = getAllTransactionForUser();
-            for (TransactionResponse transactionResponse : transactionResponses) {
-                Timestamp createdAt = transactionResponse.getTransactionDate();
-                LocalDate createdDate = createdAt.toLocalDateTime().toLocalDate();
-                if ((createdDate.isAfter(startDate) && createdDate.isBefore(endDate)) || createdDate.equals(startDate) || createdDate.equals(endDate)) {
-                    log.info(String.format(TRANSACTION_ADDED_TO_FILTER, transactionResponse.getTransactionID()));
-                    filterTransaction.add(transactionResponse);
-                }
-            }
+        if (endDate.isBefore(startDate)) {
+            throw new TransactionException("End date must not be before the start date");
         }
-        return filterTransaction;
+
+        Page<TransactionResponse> transactionResponses = getAllTransactionForUser(pageable);
+        List<TransactionResponse> filteredList = transactionResponses.getContent().stream().filter(transactionResponse -> {
+            LocalDate createdDate = transactionResponse.getTransactionDate().toLocalDateTime().toLocalDate();
+            return (createdDate.isEqual(startDate) || createdDate.isEqual(endDate) || (createdDate.isAfter(startDate) && createdDate.isBefore(endDate)));
+        }).toList();
+
+        return new PageImpl<>(filteredList, pageable, filteredList.size());
     }
 }

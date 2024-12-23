@@ -18,6 +18,8 @@ import com.example.personal_budget_planner.Service.SavingGoalService;
 import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,8 +71,8 @@ public class AdminServiceImpl implements AdminService {
      * @return
      */
     @Override
-    public List<UserResponse> getAllUsersData() {
-        List<User> userList = userRepository.getAllUsers(Role.USER);
+    public Page<UserResponse> getAllUsersData(Pageable pageable) {
+        Page<User> userList = userRepository.getAllUsers(Role.USER, pageable);
         return userMapper.toUserResponseList(userList);
     }
 
@@ -91,8 +93,8 @@ public class AdminServiceImpl implements AdminService {
      * @return
      */
     @Override
-    public List<TransactionResponse> getAllTransaction() {
-        return transactionMapper.toTransactionResponseList(transactionRepository.findAll());
+    public Page<TransactionResponse> getAllTransaction(Pageable pageable) {
+        return transactionMapper.toTransactionResponseList(transactionRepository.findAll(pageable));
     }
 
     /**
@@ -102,8 +104,8 @@ public class AdminServiceImpl implements AdminService {
      * @return
      */
     @Override
-    public List<TransactionResponse> getAllTransactionForUser(String username) {
-        List<Transaction> transactions = transactionRepository.findAllTransactionForUser(username);
+    public Page<TransactionResponse> getAllTransactionForUser(String username, Pageable pageable) {
+        Page<Transaction> transactions = transactionRepository.findAllTransactionForUser(username, pageable);
         return transactionMapper.toTransactionResponseList(transactions);
     }
 
@@ -124,7 +126,7 @@ public class AdminServiceImpl implements AdminService {
      * @return
      */
     @Override
-    public List<SavingGoalResponse> getAllGoals() {
-        return goalMapper.toSavingGoalResponseList(savingGoalRepository.findAll());
+    public Page<SavingGoalResponse> getAllGoals(Pageable pageable) {
+        return goalMapper.toSavingGoalResponseList(savingGoalRepository.findAll(pageable));
     }
 }

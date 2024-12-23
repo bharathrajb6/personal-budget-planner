@@ -4,6 +4,8 @@ import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.Service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -43,8 +45,8 @@ public class TransactionController {
     }
 
     @RequestMapping(value = "/transaction", method = RequestMethod.GET)
-    public List<TransactionResponse> getAllTransactions() {
-        return transactionService.getAllTransactionForUser();
+    public Page<TransactionResponse> getAllTransactions(Pageable pageable) {
+        return transactionService.getAllTransactionForUser(pageable);
     }
 
     /**
@@ -70,7 +72,7 @@ public class TransactionController {
     }
 
     @RequestMapping(value = "/transaction/filter", method = RequestMethod.GET)
-    public List<TransactionResponse> getTransactionFilter(@RequestParam("start") String start, @RequestParam("end") String end){
-        return transactionService.getFilteredTransaction(start,end);
+    public Page<TransactionResponse> getTransactionFilter(@RequestParam("start") String start, @RequestParam("end") String end,Pageable pageable) {
+        return transactionService.getFilteredTransaction(start,end,pageable);
     }
 }
