@@ -4,7 +4,6 @@ import com.example.personal_budget_planner.DTO.Request.UserRequest;
 import com.example.personal_budget_planner.DTO.Response.UserResponse;
 import com.example.personal_budget_planner.Service.Impl.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

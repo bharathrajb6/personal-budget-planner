@@ -3,9 +3,13 @@ package com.example.personal_budget_planner.Service.Impl;
 import com.example.personal_budget_planner.Exceptions.CacheException;
 import com.example.personal_budget_planner.Service.RedisService;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -14,15 +18,11 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class RedisServiceImpl implements RedisService {
 
     private final RedisTemplate redisTemplate;
     public ObjectMapper objectMapper = null;
-
-    @Autowired
-    public RedisServiceImpl(RedisTemplate redisTemplate) {
-        this.redisTemplate = redisTemplate;
-    }
 
     public ObjectMapper getObjectMapper() {
         if (objectMapper == null) {

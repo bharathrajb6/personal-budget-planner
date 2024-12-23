@@ -104,8 +104,8 @@ public class AdminServiceImpl implements AdminService {
      * @return
      */
     @Override
-    public SavingGoalResponse getGoalDetails(String goalID) {
-        return savingGoalService.getGoal(goalID);
+    public SavingGoalResponse getGoalDetails(String username) {
+        return savingGoalService.getGoal(username);
     }
 
     /**

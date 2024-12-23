@@ -8,10 +8,10 @@ import com.example.personal_budget_planner.Mapper.TransactionMapper;
 import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.TransactionRepository;
+import com.example.personal_budget_planner.Service.RedisService;
 import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -38,6 +38,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final TransactionRepository transactionRepository;
     private final SavingGoalServiceImpl savingGoalService;
     private final UserServiceImpl userService;
+    private final RedisService redisService;
 
     /**
      * This method is used to add the transaction to database
@@ -77,13 +78,20 @@ public class TransactionServiceImpl implements TransactionService {
      */
     @Override
     public TransactionResponse getTransaction(String transactionID) {
-        // Fetch the transaction details from database
-        Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> {
-            // If any issue come, then throw the exception
-            log.error(String.format(UNABLE_TO_FIND_TRANSACTION, transactionID));
-            return new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
-        });
-        return transactionMapper.toTransactionResponse(transaction);
+        TransactionResponse transactionResponse = redisService.getData(transactionID, TransactionResponse.class);
+        if (transactionResponse != null) {
+            return transactionResponse;
+        } else {
+            // Fetch the transaction details from database
+            Transaction transaction = transactionRepository.findByTransactionID(transactionID).orElseThrow(() -> {
+                // If any issue come, then throw the exception
+                log.error(String.format(UNABLE_TO_FIND_TRANSACTION, transactionID));
+                return new TransactionException(String.format(TRANSACTION_NOT_FOUND, transactionID));
+            });
+            transactionResponse = transactionMapper.toTransactionResponse(transaction);
+            redisService.setData(transactionID, transactionResponse, 300L);
+            return transactionResponse;
+        }
     }
 
     /**
@@ -109,6 +117,7 @@ public class TransactionServiceImpl implements TransactionService {
         try {
             // Delete the transaction by using its ID
             transactionRepository.deleteById(transactionID);
+            redisService.deleteData(transactionID);
             log.info(String.format(TRANSACTION_DELETED_SUCCESSFULLY, transactionID));
         } catch (Exception exception) {
             // If any issue come, then throw the exception
@@ -147,6 +156,7 @@ public class TransactionServiceImpl implements TransactionService {
                 log.error(String.format(UNABLE_TO_UPDATE_TRANSACTION, exception.getMessage()));
                 throw new TransactionException(String.format(UNABLE_UPDATE_TRANSACTION, exception.getMessage()));
             }
+            redisService.deleteData(transactionID);
             return getTransaction(transactionID);
         } else {
             // If any issue come, then throw the exception

@@ -88,8 +88,8 @@ public class AdminController {
      * @param goalID
      * @return
      */
-    @RequestMapping(value = "/goal/{goalID}", method = RequestMethod.GET)
-    public SavingGoalResponse getGoalByID(@PathVariable String goalID) {
-        return adminService.getGoalDetails(goalID);
+    @RequestMapping(value = "/goal/{username}", method = RequestMethod.GET)
+    public SavingGoalResponse getGoalByUsername(@PathVariable String username) {
+        return adminService.getGoalDetails(username);
     }
 }

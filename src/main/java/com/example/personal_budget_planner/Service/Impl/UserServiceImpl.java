@@ -6,10 +6,10 @@ import com.example.personal_budget_planner.Exceptions.UserException;
 import com.example.personal_budget_planner.Mapper.UserMapper;
 import com.example.personal_budget_planner.Model.User;
 import com.example.personal_budget_planner.Repository.UserRepository;
+import com.example.personal_budget_planner.Service.RedisService;
 import com.example.personal_budget_planner.Service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,6 +27,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    private final RedisService redisService;
 
     /**
      * This method will return username of the current user
@@ -46,13 +47,20 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponse getUserDetails() {
         String username = getUsername();
-        // Fetch the current user details
-        User user = userRepository.findByUsername(username).orElseThrow(() -> {
-            // If any come, then throw the exception
-            log.error(USER_DATA_NOT_FOUND, username);
-            return new UserException(String.format(USER_NOT_FOUND, username));
-        });
-        return userMapper.toUserResponse(user);
+        UserResponse userResponse = redisService.getData(username, UserResponse.class);
+        if (userResponse != null) {
+            return userResponse;
+        } else {
+            // Fetch the current user details
+            User user = userRepository.findByUsername(username).orElseThrow(() -> {
+                // If any come, then throw the exception
+                log.error(USER_DATA_NOT_FOUND, username);
+                return new UserException(String.format(USER_NOT_FOUND, username));
+            });
+            userResponse = userMapper.toUserResponse(user);
+            redisService.setData(username, userResponse, 300L);
+            return userResponse;
+        }
     }
 
     /**
@@ -78,6 +86,7 @@ public class UserServiceImpl implements UserService {
         try {
             // Update the user data
             userRepository.updateUserData(user.getFirstName(), user.getLastName(), user.getEmail(), user.getContactNumber(), user.getUsername());
+            redisService.deleteData(userRequest.getUsername());
             log.info(USER_DATA_UPDATED_SUCCESSFULLY, userRequest.getUsername());
         } catch (Exception exception) {
             // If any come, then throw the exception
@@ -111,6 +120,7 @@ public class UserServiceImpl implements UserService {
                 log.error(UNABLE_TO_UPDATE_USER_PASSWORD, exception.getMessage());
                 throw new UserException(exception.getMessage());
             }
+            redisService.deleteData(userRequest.getUsername());
             return getUserDetails();
         } else {
             // If any come, then throw the exception

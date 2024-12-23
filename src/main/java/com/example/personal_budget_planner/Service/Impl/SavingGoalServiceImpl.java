@@ -7,6 +7,7 @@ import com.example.personal_budget_planner.Mapper.SavingGoalMapper;
 import com.example.personal_budget_planner.Model.SavingGoal;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.SavingGoalRepository;
+import com.example.personal_budget_planner.Service.RedisService;
 import com.example.personal_budget_planner.Service.SavingGoalService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,6 +29,7 @@ public class SavingGoalServiceImpl implements SavingGoalService {
     private final SavingGoalMapper goalMapper;
     private final SavingGoalRepository savingGoalRepository;
     private final UserServiceImpl userService;
+    private final RedisService redisService;
 
     /**
      * This method is used to save the goal
@@ -66,13 +68,21 @@ public class SavingGoalServiceImpl implements SavingGoalService {
      */
     @Override
     public SavingGoalResponse getGoal(String username) {
-        // Fetch the goal details from database
-        SavingGoal savingGoal = savingGoalRepository.findByUsername(username).orElseThrow(() -> {
-            // If it is not present, then throw the exception
-            log.error(UNABLE_TO_FETCH_THE_GOAL);
-            return new GoalException(String.format(GOAL_NOT_FOUND, username));
-        });
-        return goalMapper.toSavingGoalResponse(savingGoal);
+        String key = "goal" + username;
+        SavingGoalResponse savingGoalResponse = redisService.getData(key, SavingGoalResponse.class);
+        if (savingGoalResponse != null) {
+            return savingGoalResponse;
+        } else {
+            // Fetch the goal details from database
+            SavingGoal savingGoal = savingGoalRepository.findByUsername(username).orElseThrow(() -> {
+                // If it is not present, then throw the exception
+                log.error(UNABLE_TO_FETCH_THE_GOAL);
+                return new GoalException(String.format(GOAL_NOT_FOUND, username));
+            });
+            savingGoalResponse = goalMapper.toSavingGoalResponse(savingGoal);
+            redisService.setData(key, savingGoalResponse, 300L);
+            return savingGoalResponse;
+        }
     }
 
     /**
@@ -102,14 +112,15 @@ public class SavingGoalServiceImpl implements SavingGoalService {
                 // Update the goal
                 savingGoalRepository.updateSavingGoal(newGoal.getMonthlyTarget(), newGoal.getYearlyTarget(), newGoal.getCurrentSavings(), newGoal.getGoalID());
                 log.info(String.format(GOAL_UPDATED_SUCCESSFULLY, goalID));
-                return getGoal(existingSavingGoal.getGoalID());
+                redisService.deleteData("goal" + existingSavingGoal.getUsername());
+                return getGoal(existingSavingGoal.getUsername());
             } catch (Exception exception) {
                 // If any issue come, then throw the exception
                 log.error(String.format(UNABLE_TO_UPDATE_THE_GOAL, goalID, exception.getMessage()));
                 throw new GoalException(String.format(UNABLE_TO_UPDATE_GOAL, exception.getMessage()));
             }
         }
-        return getGoal(goalID);
+        return getGoal(existingSavingGoal.getUsername());
     }
 
     /**
@@ -143,6 +154,7 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         try {
             // Update the current savings of the user
             savingGoalRepository.updateSavingGoal(savingGoal.getMonthlyTarget(), savingGoal.getYearlyTarget(), updatedAmount, savingGoal.getGoalID());
+            redisService.deleteData("goal" + savingGoal.getUsername());
             log.info(String.format(GOAL_UPDATED_SUCCESSFULLY, savingGoal.getGoalID()));
         } catch (Exception exception) {
             // If any issue come, then throw the exception
@@ -163,6 +175,7 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         // Fetch the goal details from database
         try {
             savingGoalRepository.updateCurrentSavings(amount, username);
+            redisService.deleteData("goal" + username);
         } catch (Exception exception) {
             throw new GoalException("Unable to update");
         }
@@ -184,6 +197,7 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         try {
             // Delete goal in database
             savingGoalRepository.delete(savingGoal);
+            redisService.deleteData("goal" + savingGoal.getUsername());
             log.info(GOAL_DELETED_SUCCESSFULLY);
         } catch (Exception exception) {
             // If any issue come, then throw the exception
