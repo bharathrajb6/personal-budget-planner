@@ -48,4 +48,9 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     @Transactional
     @Query("UPDATE Transaction t SET t.category = ?1, t.amount = ?2, t.type = ?3 where t.transactionID = ?4")
     void updateTransaction(String category, double amount, TransactionType type, String transactionID);
+
+    Page<Transaction> findTransactionByCategory(String category,Pageable pageable);
+
+    @Query("SELECT sum(t.amount) from Transaction t where t.category = ?1")
+    double getTotalAmountByCategory(String category);
 }

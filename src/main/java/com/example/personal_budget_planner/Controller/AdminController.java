@@ -85,7 +85,7 @@ public class AdminController {
     /**
      * Get saving goal by goalID
      *
-     * @param goalID
+     * @param username
      * @return
      */
     @RequestMapping(value = "/goal/{username}", method = RequestMethod.GET)

@@ -84,4 +84,14 @@ public class TransactionController {
     public Page<TransactionResponse> getTransactionFilter(@RequestParam("start") String start, @RequestParam("end") String end, Pageable pageable) {
         return transactionService.getFilteredTransaction(start, end, pageable);
     }
+
+    @RequestMapping(value = "/transaction/category/{value}", method = RequestMethod.GET)
+    public Page<TransactionResponse> getTransactionByCategory(@PathVariable String value, Pageable pageable) {
+        return transactionService.getTransactionsListByCategory(value, pageable);
+    }
+
+    @RequestMapping(value = "/transaction/category/{value}/total", method = RequestMethod.GET)
+    public double getTransactionByCategory(@PathVariable String value) {
+        return transactionService.getTransactionAmountByCategory(value);
+    }
 }

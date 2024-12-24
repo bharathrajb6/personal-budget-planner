@@ -5,6 +5,7 @@ import com.example.personal_budget_planner.DTO.Response.SavingGoalResponse;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
 import com.example.personal_budget_planner.Exceptions.TransactionException;
 import com.example.personal_budget_planner.Mapper.TransactionMapper;
+import com.example.personal_budget_planner.Model.ExpenseCategory;
 import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.TransactionRepository;
@@ -255,4 +256,21 @@ public class TransactionServiceImpl implements TransactionService {
 
         return new PageImpl<>(filteredList, pageable, filteredList.size());
     }
+
+    @Override
+    public Page<TransactionResponse> getTransactionsListByCategory(String category, Pageable pageable) {
+        try {
+            ExpenseCategory.valueOf(category);
+        } catch (IllegalArgumentException exception) {
+            throw new TransactionException(exception.getMessage());
+        }
+        Page<Transaction> transactions = transactionRepository.findTransactionByCategory(category, pageable);
+        return transactionMapper.toTransactionResponseList(transactions);
+    }
+
+    @Override
+    public double getTransactionAmountByCategory(String category) {
+        return transactionRepository.getTotalAmountByCategory(category);
+    }
+
 }

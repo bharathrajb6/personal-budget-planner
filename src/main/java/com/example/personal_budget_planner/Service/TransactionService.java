@@ -19,5 +19,9 @@ public interface TransactionService {
 
     TransactionResponse updateTransaction(String transactionID, TransactionRequest request);
 
-    Page<TransactionResponse> getFilteredTransaction(String start, String end,Pageable pageable);
+    Page<TransactionResponse> getFilteredTransaction(String start, String end, Pageable pageable);
+
+    Page<TransactionResponse> getTransactionsListByCategory(String category, Pageable pageable);
+
+    double getTransactionAmountByCategory(String category);
 }

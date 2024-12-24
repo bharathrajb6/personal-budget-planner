@@ -30,6 +30,11 @@ public class TransactionValidation {
 
         TransactionType type = request.getType();
         String category = request.getCategory();
+        validateCategory(type, category);
+    }
+
+    public static void validateCategory(TransactionType type, String category) {
+
         if (type == TransactionType.INCOME) {
             try {
                 IncomeCategory.valueOf(category);

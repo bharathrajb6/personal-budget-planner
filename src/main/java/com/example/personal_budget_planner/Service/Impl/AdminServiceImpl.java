@@ -100,7 +100,7 @@ public class AdminServiceImpl implements AdminService {
     /**
      * This method is used to get goal data by goalID
      *
-     * @param goalID
+     * @param username
      * @return
      */
     @Override
