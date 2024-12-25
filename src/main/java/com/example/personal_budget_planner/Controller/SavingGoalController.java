@@ -28,24 +28,22 @@ public class SavingGoalController {
     /**
      * This method is used to get the goal details by using its id
      *
-     * @param username
      * @return
      */
-    @RequestMapping(value = "/goal/{username}", method = RequestMethod.GET)
-    public SavingGoalResponse getGoal(@PathVariable String username) {
-        return savingGoalService.getGoal(username);
+    @RequestMapping(value = "/goal", method = RequestMethod.GET)
+    public SavingGoalResponse getGoal() {
+        return savingGoalService.getGoal();
     }
 
     /**
      * This method is used to update the goal by using its id
      *
-     * @param goalID
      * @param request
      * @return
      */
-    @RequestMapping(value = "/goal/{goalID}", method = RequestMethod.PUT)
-    public SavingGoalResponse updateGoal(@PathVariable String goalID, @RequestBody SavingGoalRequest request) {
-        return savingGoalService.updateGoal(goalID, request);
+    @RequestMapping(value = "/goal", method = RequestMethod.PUT)
+    public SavingGoalResponse updateGoal(@RequestBody SavingGoalRequest request) {
+        return savingGoalService.updateGoal(request);
     }
 
     /**

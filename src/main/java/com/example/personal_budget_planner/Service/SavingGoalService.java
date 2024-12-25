@@ -8,13 +8,17 @@ public interface SavingGoalService {
 
     SavingGoalResponse setGoal(SavingGoalRequest request);
 
-    SavingGoalResponse getGoal(String goalID);
+    SavingGoalResponse getGoal();
 
-    SavingGoalResponse updateGoal(String goalID, SavingGoalRequest request);
+    SavingGoalResponse updateGoal(SavingGoalRequest request);
 
     void deleteGoal(String goalID);
 
     void updateCurrentSavingsForNewTransaction(double amount, TransactionType operation);
 
     void updateCurrentSavingsForExistingTransaction(double amount, String username);
+
+    boolean checkIfGoalIsPresentForUser(String username);
+
+    void notifyUser(String username);
 }

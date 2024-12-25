@@ -3,14 +3,14 @@ package com.example.personal_budget_planner.Service.Impl;
 import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.SavingGoalResponse;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
+import com.example.personal_budget_planner.DTO.Response.UserResponse;
 import com.example.personal_budget_planner.Exceptions.TransactionException;
 import com.example.personal_budget_planner.Mapper.TransactionMapper;
 import com.example.personal_budget_planner.Model.ExpenseCategory;
 import com.example.personal_budget_planner.Model.Transaction;
 import com.example.personal_budget_planner.Model.TransactionType;
 import com.example.personal_budget_planner.Repository.TransactionRepository;
-import com.example.personal_budget_planner.Service.RedisService;
-import com.example.personal_budget_planner.Service.TransactionService;
+import com.example.personal_budget_planner.Service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -37,9 +37,10 @@ public class TransactionServiceImpl implements TransactionService {
 
     private final TransactionMapper transactionMapper;
     private final TransactionRepository transactionRepository;
-    private final SavingGoalServiceImpl savingGoalService;
-    private final UserServiceImpl userService;
+    private final SavingGoalService savingGoalService;
+    private final UserService userService;
     private final RedisService redisService;
+    private final EmailService emailService;
 
     /**
      * This method is used to add the transaction to database
@@ -53,7 +54,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Validate the transaction request object
         validateTransaction(request);
-
+        boolean isGoalPresent = savingGoalService.checkIfGoalIsPresentForUser(userService.getUsername());
+        if (!isGoalPresent) {
+            throw new TransactionException("Goal is not found for this user");
+        }
         // Convert the request object to model
         Transaction transaction = generateTransaction(request);
 
@@ -68,6 +72,10 @@ public class TransactionServiceImpl implements TransactionService {
 
         // Update the current savings amount based on transaction type
         savingGoalService.updateCurrentSavingsForNewTransaction(transaction.getAmount(), transaction.getType());
+
+        UserResponse userResponse = userService.getUserDetails();
+        String body = String.format("Transaction has been added successfully with ID - %s.%n%nThanks,%nTeam Personal Budget Team", transaction.getTransactionID());
+        emailService.sendEmail(userResponse.getEmail(), "New transaction has been added", body);
         return getTransaction(transaction.getTransactionID());
     }
 
@@ -197,7 +205,7 @@ public class TransactionServiceImpl implements TransactionService {
         double oldAmount = oldTransaction.getAmount();
         TransactionType oldType = oldTransaction.getType();
 
-        SavingGoalResponse savingGoal = savingGoalService.getGoal(userService.getUsername());
+        SavingGoalResponse savingGoal = savingGoalService.getGoal();
 
         double newAmount = request.getAmount();
         TransactionType newType = request.getType();

@@ -33,13 +33,12 @@ public interface SavingGoalRepository extends JpaRepository<SavingGoal, String> 
      *
      * @param month
      * @param year
-     * @param currentSavings
      * @param goalID
      */
     @Modifying
     @Transactional
-    @Query("UPDATE SavingGoal s SET s.monthlyTarget = ?1, s.yearlyTarget = ?2, s.currentSavings = ?3 where s.goalID = ?4")
-    void updateSavingGoal(double month, double year, double currentSavings, String goalID);
+    @Query("UPDATE SavingGoal s SET s.monthlyTarget = ?1, s.yearlyTarget = ?2 where s.goalID = ?3")
+    void updateSavingGoal(double month, double year, String goalID);
 
     /**
      * Update current savings for new transaction

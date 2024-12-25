@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
      *
      * @return
      */
+    @Override
     public String getUsername() {
         // Get the user data from security context
         return SecurityContextHolder.getContext().getAuthentication().getName();

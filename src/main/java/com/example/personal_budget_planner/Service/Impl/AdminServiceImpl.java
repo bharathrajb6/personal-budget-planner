@@ -98,14 +98,14 @@ public class AdminServiceImpl implements AdminService {
     }
 
     /**
-     * This method is used to get goal data by goalID
+     * This method is used to get goal data by username
      *
      * @param username
      * @return
      */
     @Override
     public SavingGoalResponse getGoalDetails(String username) {
-        return savingGoalService.getGoal(username);
+        return savingGoalService.getGoal();
     }
 
     /**
