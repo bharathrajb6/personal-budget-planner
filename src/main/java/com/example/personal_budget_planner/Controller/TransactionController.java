@@ -2,11 +2,18 @@ package com.example.personal_budget_planner.Controller;
 
 import com.example.personal_budget_planner.DTO.Request.TransactionRequest;
 import com.example.personal_budget_planner.DTO.Response.TransactionResponse;
+import com.example.personal_budget_planner.Service.CSVExportService;
 import com.example.personal_budget_planner.Service.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.PrintWriter;
 
 
 @RestController
@@ -16,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final CSVExportService csvExportService;
 
     /**
      * This method is used to add the transaction
@@ -94,4 +102,25 @@ public class TransactionController {
     public double getTransactionByCategory(@PathVariable String value) {
         return transactionService.getTransactionAmountByCategory(value);
     }
+
+    @RequestMapping(value = "/transaction/export", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> exportTransaction() {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintWriter writer = new PrintWriter(outputStream);
+
+            // Write the data to file
+            csvExportService.exportTransaction(writer);
+            writer.flush();
+
+            // Set headers for download
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.csv");
+            headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
+            return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

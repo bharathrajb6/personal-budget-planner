@@ -25,4 +25,6 @@ public interface TransactionMapper {
                 .collect(Collectors.toList());
         return new PageImpl<>(responses, transactionPage.getPageable(), transactionPage.getTotalElements());
     }
+
+    List<TransactionResponse> toTransactionResponseList(List<Transaction> transactions);
 }
