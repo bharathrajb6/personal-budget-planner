@@ -36,14 +36,16 @@ public class CSVExporterServiceImpl implements CSVExportService {
     @Override
     public void exportTransaction(PrintWriter writer) {
 
+        // Get all transactions for this user
         List<Transaction> transactions = transactionRepository.findAllTransactionForUser(userService.getUsername());
+
+        // Convert it to response
         List<TransactionResponse> transactionResponses = transactionMapper.toTransactionResponseList(transactions);
 
         writer.println("TransactionID,Username,Amount,Category,Type,TransactionDate");
 
         for (TransactionResponse transactionResponse : transactionResponses) {
-            String result = String.join(",", transactionResponse.getTransactionID(), transactionResponse.getUsername(), String.valueOf(transactionResponse.getAmount()),
-                    transactionResponse.getCategory(), transactionResponse.getType().toString(), transactionResponse.getTransactionDate().toString());
+            String result = String.join(",", transactionResponse.getTransactionID(), transactionResponse.getUsername(), String.valueOf(transactionResponse.getAmount()), transactionResponse.getCategory(), transactionResponse.getType().toString(), transactionResponse.getTransactionDate().toString());
             writer.println(result);
         }
     }
@@ -74,9 +76,13 @@ public class CSVExporterServiceImpl implements CSVExportService {
             throw new TransactionException("End date must not be before the start date");
         }
 
+        // Get all transactions for this user
         List<Transaction> transactions = transactionRepository.findAllTransactionForUser(userService.getUsername());
+
+        // Convert it to response
         List<TransactionResponse> transactionResponses = transactionMapper.toTransactionResponseList(transactions);
 
+        // Filter the transaction based on given time
         List<TransactionResponse> filteredList = transactionResponses.stream().filter(transactionResponse -> {
             LocalDate createdDate = transactionResponse.getTransactionDate().toLocalDateTime().toLocalDate();
             return (createdDate.isEqual(startDate) || createdDate.isEqual(endDate) || (createdDate.isAfter(startDate) && createdDate.isBefore(endDate)));
@@ -86,8 +92,7 @@ public class CSVExporterServiceImpl implements CSVExportService {
         writer.println("TransactionID,Username,Amount,Category,Type,TransactionDate");
 
         for (TransactionResponse transactionResponse : filteredList) {
-            String result = String.join(",", transactionResponse.getTransactionID(), transactionResponse.getUsername(), String.valueOf(transactionResponse.getAmount()),
-                    transactionResponse.getCategory(), transactionResponse.getType().toString(), transactionResponse.getTransactionDate().toString());
+            String result = String.join(",", transactionResponse.getTransactionID(), transactionResponse.getUsername(), String.valueOf(transactionResponse.getAmount()), transactionResponse.getCategory(), transactionResponse.getType().toString(), transactionResponse.getTransactionDate().toString());
             writer.println(result);
         }
     }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
-import java.io.Writer;
 
 
 @RestController
@@ -142,15 +141,24 @@ public class TransactionController {
         }
     }
 
-    @RequestMapping(value = "/transaction/export", method = RequestMethod.GET)
+    /**
+     * This method will return the CSV file which contains all the transactions in specific time range
+     *
+     * @param start
+     * @param end
+     * @return
+     */
+    @RequestMapping(value = "/transaction/export/filter", method = RequestMethod.GET)
     public ResponseEntity<byte[]> exportTransaction(@RequestParam("start") String start, @RequestParam("end") String end) {
         try {
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             PrintWriter writer = new PrintWriter(outputStream);
 
+            // Write the data into csv file
             csvExportService.exportTransaction(start, end, writer);
             writer.flush();
 
+            // Adding headers to the request
             HttpHeaders headers = new HttpHeaders();
             headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.csv");
             headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
