@@ -36,8 +36,14 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     @Query("SELECT t from Transaction t where t.username = ?1")
     Page<Transaction> findAllTransactionForUser(String username, Pageable pageable);
 
+    /**
+     * This method is used to find all transactions for a user
+     *
+     * @param username
+     * @return
+     */
     @Query("SELECT t from Transaction t where t.username = ?1")
-    List<Transaction> findAllTransactionForUserForExport(String username);
+    List<Transaction> findAllTransactionForUser(String username);
 
     /**
      * This method is used to update a transaction
@@ -52,8 +58,21 @@ public interface TransactionRepository extends JpaRepository<Transaction, String
     @Query("UPDATE Transaction t SET t.category = ?1, t.amount = ?2, t.type = ?3 where t.transactionID = ?4")
     void updateTransaction(String category, double amount, TransactionType type, String transactionID);
 
+    /**
+     * This method is used to find the transactions based on category
+     *
+     * @param category
+     * @param pageable
+     * @return
+     */
     Page<Transaction> findTransactionByCategory(String category, Pageable pageable);
 
+    /**
+     * This method is used to find the total amount based on category
+     *
+     * @param category
+     * @return
+     */
     @Query("SELECT sum(t.amount) from Transaction t where t.category = ?1")
     double getTotalAmountByCategory(String category);
 }

@@ -265,6 +265,13 @@ public class TransactionServiceImpl implements TransactionService {
         return new PageImpl<>(filteredList, pageable, filteredList.size());
     }
 
+    /**
+     * This method will return the list of transactions filtered by category
+     *
+     * @param category
+     * @param pageable
+     * @return
+     */
     @Override
     public Page<TransactionResponse> getTransactionsListByCategory(String category, Pageable pageable) {
         try {
@@ -276,6 +283,12 @@ public class TransactionServiceImpl implements TransactionService {
         return transactionMapper.toTransactionResponseList(transactions);
     }
 
+    /**
+     * This method will return the total amount for specified category
+     *
+     * @param category
+     * @return
+     */
     @Override
     public double getTransactionAmountByCategory(String category) {
         return transactionRepository.getTotalAmountByCategory(category);

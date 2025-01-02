@@ -5,5 +5,7 @@ import java.io.PrintWriter;
 
 public interface CSVExportService {
 
-    public void exportTransaction(PrintWriter printWriter);
+    void exportTransaction(PrintWriter printWriter);
+
+    void exportTransaction(String start, String end, PrintWriter writer);
 }

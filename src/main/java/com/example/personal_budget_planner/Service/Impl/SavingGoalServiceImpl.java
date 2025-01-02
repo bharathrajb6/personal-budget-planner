@@ -214,11 +214,22 @@ public class SavingGoalServiceImpl implements SavingGoalService {
         }
     }
 
+    /**
+     * This method is used to check if user is having a goal or not
+     *
+     * @param username
+     * @return
+     */
     @Override
     public boolean checkIfGoalIsPresentForUser(String username) {
         return savingGoalRepository.findByUsername(username).isPresent();
     }
 
+    /**
+     * This method will send the email notifications to user registered email when specific conditions are met.
+     *
+     * @param username
+     */
     @Override
     public void notifyUser(String username) {
         SavingGoal savingGoal = savingGoalRepository.findByUsername(username).orElseThrow(() -> {

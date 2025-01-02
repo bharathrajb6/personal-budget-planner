@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
+import java.io.Writer;
 
 
 @RestController
@@ -93,16 +94,34 @@ public class TransactionController {
         return transactionService.getFilteredTransaction(start, end, pageable);
     }
 
+    /**
+     * This method will return list of transaction filtered by category
+     *
+     * @param value
+     * @param pageable
+     * @return
+     */
     @RequestMapping(value = "/transaction/category/{value}", method = RequestMethod.GET)
     public Page<TransactionResponse> getTransactionByCategory(@PathVariable String value, Pageable pageable) {
         return transactionService.getTransactionsListByCategory(value, pageable);
     }
 
+    /**
+     * This method will return amount spent on that category
+     *
+     * @param value
+     * @return
+     */
     @RequestMapping(value = "/transaction/category/{value}/total", method = RequestMethod.GET)
     public double getTransactionByCategory(@PathVariable String value) {
         return transactionService.getTransactionAmountByCategory(value);
     }
 
+    /**
+     * This method will return the CSV file which contains all the transactions
+     *
+     * @return
+     */
     @RequestMapping(value = "/transaction/export", method = RequestMethod.GET)
     public ResponseEntity<byte[]> exportTransaction() {
         try {
@@ -119,6 +138,25 @@ public class TransactionController {
             headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
             return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
         } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "/transaction/export", method = RequestMethod.GET)
+    public ResponseEntity<byte[]> exportTransaction(@RequestParam("start") String start, @RequestParam("end") String end) {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            PrintWriter writer = new PrintWriter(outputStream);
+
+            csvExportService.exportTransaction(start, end, writer);
+            writer.flush();
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=data.csv");
+            headers.add(HttpHeaders.CONTENT_TYPE, "text/csv");
+            return new ResponseEntity<>(outputStream.toByteArray(), headers, HttpStatus.OK);
+
+        } catch (Exception exception) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
