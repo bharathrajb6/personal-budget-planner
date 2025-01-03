@@ -59,24 +59,24 @@ Before running the application, ensure you have the following installed:
 
 #### 1. Clone the Repository:
 
+```
 git clone https://github.com/bharathrajb6/personal-budget-planner.git
-
 cd personal-budget-planner
+```
 
 #### 2. Configure the Database: Update the application.properties or application.yml file with your MySQL and Redis configurations:
-
+```
 spring.datasource.url=jdbc:mysql://localhost:3306/budget_planner
-
 spring.datasource.username=<your_mysql_username>
-
 spring.datasource.password=<your_mysql_password>
-
 spring.redis.host=localhost
 spring.redis.port=6379
+```
 
 #### 3. Run the Application:
-
+```
 ./mvnw spring-boot:run
+```
 
 #### 4. Access the Application:
 
