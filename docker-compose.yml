@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    image: mysql:8
+    container_name: expense-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: Hunter@4343
+      MYSQL_DATABASE: personal_expense_planner
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  expense-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expense-app
+    depends_on:
+      - mysql-db
+    ports:
+      - "8090:8090"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3306/personal_expense_planner
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: Hunter@4343
+    restart: on-failure
+
+volumes:
+  mysql_data:
